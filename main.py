@@ -251,7 +251,7 @@ def query_gemini(document_text: str, question: str, history: list[dict]) -> str:
     prompt = build_prompt(document_text, question, history)
 
     response = client.models.generate_content(
-        model="gemini-1.5-flash",
+        model="gemini-2.0-flash",
         contents=prompt,
         config=types.GenerateContentConfig(
             temperature=0.2,        # lower = more factual / less creative
@@ -342,8 +342,8 @@ with st.sidebar:
             st.rerun()
 
     st.markdown("---")
-    st.caption("Powered by **Gemini 1.5 Flash**")
-    st.caption("Model: `gemini-1.5-flash` · Temp: 0.2")
+    st.caption("Powered by **Gemini 2.0 Flash**")
+    st.caption("Model: `gemini-2.0-flash` · Temp: 0.2")
 
 
 # ─────────────────────────────────────────────
