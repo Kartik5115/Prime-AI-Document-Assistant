@@ -237,7 +237,7 @@ def get_gemini_client() -> genai.Client:
     if integration_base_url and integration_api_key:
         return genai.Client(
             api_key=integration_api_key,
-            http_options={"base_url": integration_base_url},
+            http_options={"base_url": integration_base_url, "api_version": ""},
         )
 
     api_key = os.environ.get("GEMINI_API_KEY", "").strip()
