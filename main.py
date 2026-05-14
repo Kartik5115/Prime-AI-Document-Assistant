@@ -221,17 +221,30 @@ Assistant:"""
 def get_gemini_client() -> genai.Client:
     """Initialise and cache the Gemini client.
 
+    Prefers the Replit-managed integration endpoint (no user quota consumed).
+    Falls back to the user-supplied GEMINI_API_KEY if the integration vars
+    are not present.
+
     Returns:
         Authenticated google.genai Client instance.
 
     Raises:
-        ValueError: If GEMINI_API_KEY is not set.
+        ValueError: If neither integration vars nor GEMINI_API_KEY are set.
     """
+    integration_base_url = os.environ.get("AI_INTEGRATIONS_GEMINI_BASE_URL", "").strip()
+    integration_api_key = os.environ.get("AI_INTEGRATIONS_GEMINI_API_KEY", "").strip()
+
+    if integration_base_url and integration_api_key:
+        return genai.Client(
+            api_key=integration_api_key,
+            http_options={"base_url": integration_base_url},
+        )
+
     api_key = os.environ.get("GEMINI_API_KEY", "").strip()
     if not api_key:
         raise ValueError(
-            "GEMINI_API_KEY is not set. "
-            "Add it to your .env file or environment secrets."
+            "No Gemini credentials found. "
+            "Add GEMINI_API_KEY to your environment secrets."
         )
     return genai.Client(api_key=api_key)
 
@@ -251,7 +264,7 @@ def query_gemini(document_text: str, question: str, history: list[dict]) -> str:
     prompt = build_prompt(document_text, question, history)
 
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model="gemini-2.5-flash",
         contents=prompt,
         config=types.GenerateContentConfig(
             temperature=0.2,        # lower = more factual / less creative
@@ -342,8 +355,8 @@ with st.sidebar:
             st.rerun()
 
     st.markdown("---")
-    st.caption("Powered by **Gemini 2.0 Flash**")
-    st.caption("Model: `gemini-2.0-flash` · Temp: 0.2")
+    st.caption("Powered by **Gemini 2.5 Flash**")
+    st.caption("Model: `gemini-2.5-flash` · Temp: 0.2")
 
 
 # ─────────────────────────────────────────────
